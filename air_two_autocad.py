@@ -9,7 +9,7 @@
 # acad = pyautocad.Autocad(create_if_not_exists=True)
 # import xlwings as xw
 
-import comtypes.client;
+# import comtypes.client;
 import os;
 import sys;
 import pandas as pd
