@@ -293,211 +293,211 @@ class ExcelConnection:
     
 
 
-class EtabsConnection:
-    def __init__(self):
-        return 
-        #         self.acad = Autocad()
+# # class EtabsConnection:
+#     def __init__(self):
+#         return 
+#         #         self.acad = Autocad()
     
-    # GETS ESTABLISHES CONNECTION TO ETABS.
-    def connect_to_etabs_2019(self):
-        """
-        Return Values:
-        SapModel (type cOAPI pointer)
-        myETABSObject (type cOAPI pointer)
-        helper (type cOAPI pointer)
-        """
-        #create API helper object
-        helper = comtypes.client.CreateObject('ETABSv1.Helper')
-        helper = helper.QueryInterface(comtypes.gen.ETABSv1.cHelper)
+#     # GETS ESTABLISHES CONNECTION TO ETABS.
+#     def connect_to_etabs_2019(self):
+#         """
+#         Return Values:
+#         SapModel (type cOAPI pointer)
+#         myETABSObject (type cOAPI pointer)
+#         helper (type cOAPI pointer)
+#         """
+#         #create API helper object
+#         helper = comtypes.client.CreateObject('ETABSv1.Helper')
+#         helper = helper.QueryInterface(comtypes.gen.ETABSv1.cHelper)
         
-        # #attach to a running instance of ETABS
-        # try:
-        #     #get the active ETABS object
-        #     myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject");
-        # except (OSError, comtypes.COMError):
-        #     print("No running instance of the program found or failed to attach.");
-        #     sys.exit(-1);
-        # #create SapModel object
-        myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject")
-        SapModel = myETABSObject.SapModel
-        return SapModel,myETABSObject,helper
+#         # #attach to a running instance of ETABS
+#         # try:
+#         #     #get the active ETABS object
+#         #     myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject");
+#         # except (OSError, comtypes.COMError):
+#         #     print("No running instance of the program found or failed to attach.");
+#         #     sys.exit(-1);
+#         # #create SapModel object
+#         myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject")
+#         SapModel = myETABSObject.SapModel
+#         return SapModel,myETABSObject,helper
     
-    # GETS CO-ORDINATES OF ALL THE POINTS FROM ETABS. 
-    def get_coordinates_from_etabs(self,sap_model):
-        # Get all point names
-        point_names = sap_model.PointObj.GetNameList()
+#     # GETS CO-ORDINATES OF ALL THE POINTS FROM ETABS. 
+#     def get_coordinates_from_etabs(self,sap_model):
+#         # Get all point names
+#         point_names = sap_model.PointObj.GetNameList()
 
-        # Get point coordinates based on unique names
-        point_coords = {}
-        for name in point_names[1]:
-            name = str(name)
-            coord = sap_model.PointObj.GetCoordCartesian(name)
-            point_coords[name] = coord
+#         # Get point coordinates based on unique names
+#         point_coords = {}
+#         for name in point_names[1]:
+#             name = str(name)
+#             coord = sap_model.PointObj.GetCoordCartesian(name)
+#             point_coords[name] = coord
 
-        return point_coords
+#         return point_coords
 
-    # CONVERTS DATA FROM M TO MM
-    def convert_to_mm(self, d):
-        if max(d.values())>1000:
-            print('already in mm')
-            return {k: v * 1 for k, v in d.items()}
-        else:
-            print('m to mm')
-            return {k: v * 1000 for k, v in d.items()}
+#     # CONVERTS DATA FROM M TO MM
+#     def convert_to_mm(self, d):
+#         if max(d.values())>1000:
+#             print('already in mm')
+#             return {k: v * 1 for k, v in d.items()}
+#         else:
+#             print('m to mm')
+#             return {k: v * 1000 for k, v in d.items()}
 
-    # CONVERTS MM DATA TO FEET ( MAINLY FOR FOUNDATIONS??)   
-    def convert_to_ft(self, d):
-        if max(d.values())>1000:
-            print('mm to ft')
-            return {k: round(v /304.8,3) for k, v in d.items()}
-        else:
-            print('m to ft')
-            return {k: round(v /0.3048,3) for k, v in d.items()}
+#     # CONVERTS MM DATA TO FEET ( MAINLY FOR FOUNDATIONS??)   
+#     def convert_to_ft(self, d):
+#         if max(d.values())>1000:
+#             print('mm to ft')
+#             return {k: round(v /304.8,3) for k, v in d.items()}
+#         else:
+#             print('m to ft')
+#             return {k: round(v /0.3048,3) for k, v in d.items()}
     
-    # GETS GRID DATA FROM ETABS.
-    def get_etabs_grids(self, sap_model):
-        # GET GRID VALUES
-        get_grids = sap_model.GridSys.GetGridSys_2('G1')
+#     # GETS GRID DATA FROM ETABS.
+#     def get_etabs_grids(self, sap_model):
+#         # GET GRID VALUES
+#         get_grids = sap_model.GridSys.GetGridSys_2('G1')
 
-        grid_x = dict(zip(get_grids[6],get_grids[8] ))
-        grid_y = dict(zip(get_grids[7],get_grids[9] ))
-        grid = [grid_x,grid_y]
+#         grid_x = dict(zip(get_grids[6],get_grids[8] ))
+#         grid_y = dict(zip(get_grids[7],get_grids[9] ))
+#         grid = [grid_x,grid_y]
 
-        grid_x_mm = self.convert_to_mm(grid_x)
-        grid_y_mm = self.convert_to_mm(grid_y)
-        grid_mm = [grid_x_mm,grid_y_mm]
+#         grid_x_mm = self.convert_to_mm(grid_x)
+#         grid_y_mm = self.convert_to_mm(grid_y)
+#         grid_mm = [grid_x_mm,grid_y_mm]
 
-        grid_x_ft = self.convert_to_ft(grid_x)
-        grid_y_ft = self.convert_to_ft(grid_y)
-        grid_ft = [grid_x_ft,grid_y_ft]
+#         grid_x_ft = self.convert_to_ft(grid_x)
+#         grid_y_ft = self.convert_to_ft(grid_y)
+#         grid_ft = [grid_x_ft,grid_y_ft]
 
-        return grid,grid_mm,grid_ft
+#         return grid,grid_mm,grid_ft
     
-    # GETS ALL FRAMES DATA FROM ETABS.
-    def get_allframes(self,sap_model):
-        #RETRIEVES data for all frame objects in the model.
-         all_frames = sap_model.FrameObj.GetAllFrames()
-         return all_frames
+#     # GETS ALL FRAMES DATA FROM ETABS.
+#     def get_allframes(self,sap_model):
+#         #RETRIEVES data for all frame objects in the model.
+#          all_frames = sap_model.FrameObj.GetAllFrames()
+#          return all_frames
     
-    # GETS ALL FRAME PROPERTIES FROM ETABS
-    def GetAllFrameProperties(self,sap_model):
-       #Retrieves select data for all frame properties in the model 
-        all_frame_properties = sap_model.PropFrame.GetAllFrameProperties_2()
-        return all_frame_properties
+#     # GETS ALL FRAME PROPERTIES FROM ETABS
+#     def GetAllFrameProperties(self,sap_model):
+#        #Retrieves select data for all frame properties in the model 
+#         all_frame_properties = sap_model.PropFrame.GetAllFrameProperties_2()
+#         return all_frame_properties
     
     
 
-def get_frames():
-    sap_model, etabs_object, helper = EtabsConnection().connect_to_etabs_2019()
-    grid_values, grid_mm, grid_ft = EtabsConnection().get_etabs_grids(sap_model)
+# def get_frames():
+#     sap_model, etabs_object, helper = EtabsConnection().connect_to_etabs_2019()
+#     grid_values, grid_mm, grid_ft = EtabsConnection().get_etabs_grids(sap_model)
 
-    point_coords = EtabsConnection().get_coordinates_from_etabs(sap_model)
-    # point_coords
-    all_frames = EtabsConnection().get_allframes(sap_model)
-    df_frames = pd.DataFrame(all_frames[1:-1])
-    df_frames = df_frames.transpose()
-    # df_frames = df_frames[['0','1','2','3','4','5','6','7','8','9','10']]
-    df_frames = df_frames.iloc[:, :11]
-    col_names = ['U Name','Section','Story','P1','P2','P1x','P1y','P1z','P2x','P2y','P2z']
-    df_frames.columns = col_names
+#     point_coords = EtabsConnection().get_coordinates_from_etabs(sap_model)
+#     # point_coords
+#     all_frames = EtabsConnection().get_allframes(sap_model)
+#     df_frames = pd.DataFrame(all_frames[1:-1])
+#     df_frames = df_frames.transpose()
+#     # df_frames = df_frames[['0','1','2','3','4','5','6','7','8','9','10']]
+#     df_frames = df_frames.iloc[:, :11]
+#     col_names = ['U Name','Section','Story','P1','P2','P1x','P1y','P1z','P2x','P2y','P2z']
+#     df_frames.columns = col_names
 
-    all_frame_properties= EtabsConnection().GetAllFrameProperties(sap_model)
-    df_frame_props = pd.DataFrame(all_frame_properties[1:-1])
-    df_frame_props = df_frame_props.transpose().iloc[:,:4]
-    col_namess = ['Section','ip','Depth','Width']
-    df_frame_props.columns = col_namess
-    df_frame_props = df_frame_props.drop('ip', axis=1)
+#     all_frame_properties= EtabsConnection().GetAllFrameProperties(sap_model)
+#     df_frame_props = pd.DataFrame(all_frame_properties[1:-1])
+#     df_frame_props = df_frame_props.transpose().iloc[:,:4]
+#     col_namess = ['Section','ip','Depth','Width']
+#     df_frame_props.columns = col_namess
+#     df_frame_props = df_frame_props.drop('ip', axis=1)
 
-    df_frames = pd.merge(df_frames,df_frame_props,on = 'Section')
+#     df_frames = pd.merge(df_frames,df_frame_props,on = 'Section')
 
-    # Define a custom function to extract the first character from the 'Section' column
-    def extract_type(section):
-        return section.split()[0]
+#     # Define a custom function to extract the first character from the 'Section' column
+#     def extract_type(section):
+#         return section.split()[0]
 
-    # Apply the custom function to the 'Section' column
-    df_frames['Type'] = df_frames['Section'].apply(extract_type)
+#     # Apply the custom function to the 'Section' column
+#     df_frames['Type'] = df_frames['Section'].apply(extract_type)
 
-    # Map the extracted first character to 'Beam', 'Column', or 'Wall'
-    df_frames['Type'] = df_frames['Type'].map({'B': 'Beam', 'C': 'Column', 'W': 'Wall'})
-
-
-    # ADD BLOCK ORIGIN
-    df_frames['Story'].unique()
-
-    # Get unique values from column 'B'
-    unique_values = sorted(df_frames['Story'].unique())
-
-    # Create a dictionary with unique values as keys and incremental integers as values
-    n = max(df_frames.iloc[:, [5, 6,8,9]].max())*1.5
-    # n = 100000
-    m = 0
-    value_dict = {unique_values[i]: m+i * n for i in range(len(unique_values))}
-
-    # value_dict
-    df_frames['Block_origin'] = df_frames['Story'].map(value_dict)
+#     # Map the extracted first character to 'Beam', 'Column', or 'Wall'
+#     df_frames['Type'] = df_frames['Type'].map({'B': 'Beam', 'C': 'Column', 'W': 'Wall'})
 
 
-    # ##################ADD ORIENTATION FUNCTION
-    # Calculate the orientation using arctan2
-    df_frames['orientation'] = [math.degrees(math.atan2(P2y - P1y, P2x - P1x)) for P1x, P1y, P2x, P2y in zip(df_frames['P1x'], df_frames['P1y'], df_frames['P2x'], df_frames['P2y'])]
+#     # ADD BLOCK ORIGIN
+#     df_frames['Story'].unique()
 
-    # CHANGE TO MM THE LENGTHS FROM M.
-    # df_frames.iloc[:, 5:13] *= 1000
-    # df_frames['Block_origin'] *= 1000
+#     # Get unique values from column 'B'
+#     unique_values = sorted(df_frames['Story'].unique())
 
-    st.write(df_frames)
-    return df_frames
+#     # Create a dictionary with unique values as keys and incremental integers as values
+#     n = max(df_frames.iloc[:, [5, 6,8,9]].max())*1.5
+#     # n = 100000
+#     m = 0
+#     value_dict = {unique_values[i]: m+i * n for i in range(len(unique_values))}
 
-# Define a custom function to be applied to the dataframe to draw beams
-def call_draw_beams(row):   
-    if row['Type'] == 'Beam':
-        AutocadConnection().draw_beams(row['Width'],row['Block_origin'] +row['P1x'],row['P1y'],row['Block_origin'] +row['P2x'],row['P2y'],row['Section'],200,row['orientation'])
+#     # value_dict
+#     df_frames['Block_origin'] = df_frames['Story'].map(value_dict)
 
-# Define a custom function to be applied to the dataframe to draw columns.
-def call_draw_cols(row):   
-    if row['Type'] == 'Column':
-        AutocadConnection().draw_rect(float( row['Depth']),float( row['Width']), float(row['Block_origin'] + row['P1x']), float(row['P1y']),row['Section'],500,200,500*0.6,'no','no')
 
-# FUNCTION TO DRAW BEAMS
-def draw_beams():
-    df_frames = get_frames()
-    lay_list = ['line_0.25','Grid','Text','Dimension']
-    AutocadConnection().add_layers(lay_list)
+#     # ##################ADD ORIENTATION FUNCTION
+#     # Calculate the orientation using arctan2
+#     df_frames['orientation'] = [math.degrees(math.atan2(P2y - P1y, P2x - P1x)) for P1x, P1y, P2x, P2y in zip(df_frames['P1x'], df_frames['P1y'], df_frames['P2x'], df_frames['P2y'])]
+
+#     # CHANGE TO MM THE LENGTHS FROM M.
+#     # df_frames.iloc[:, 5:13] *= 1000
+#     # df_frames['Block_origin'] *= 1000
+
+#     st.write(df_frames)
+#     return df_frames
+
+# # Define a custom function to be applied to the dataframe to draw beams
+# def call_draw_beams(row):   
+#     if row['Type'] == 'Beam':
+#         AutocadConnection().draw_beams(row['Width'],row['Block_origin'] +row['P1x'],row['P1y'],row['Block_origin'] +row['P2x'],row['P2y'],row['Section'],200,row['orientation'])
+
+# # Define a custom function to be applied to the dataframe to draw columns.
+# def call_draw_cols(row):   
+#     if row['Type'] == 'Column':
+#         AutocadConnection().draw_rect(float( row['Depth']),float( row['Width']), float(row['Block_origin'] + row['P1x']), float(row['P1y']),row['Section'],500,200,500*0.6,'no','no')
+
+# # FUNCTION TO DRAW BEAMS
+# def draw_beams():
+#     df_frames = get_frames()
+#     lay_list = ['line_0.25','Grid','Text','Dimension']
+#     AutocadConnection().add_layers(lay_list)
     
-    # df_frames = get_frames()
-    # Use the apply method to apply the custom function to each row
-    df_frames['D'] = df_frames.apply(call_draw_beams, axis=1)
+#     # df_frames = get_frames()
+#     # Use the apply method to apply the custom function to each row
+#     df_frames['D'] = df_frames.apply(call_draw_beams, axis=1)
 
-    for item in df_frames['Story'].unique():
-        print (item)
-        Block_origin = df_frames.loc[df_frames['Story'] == item,'Block_origin'].values[0]
-        AutocadConnection().add_block_name(Block_origin,4000,500,'Beam Layout Plan at  ' + str(item),5)
+#     for item in df_frames['Story'].unique():
+#         print (item)
+#         Block_origin = df_frames.loc[df_frames['Story'] == item,'Block_origin'].values[0]
+#         AutocadConnection().add_block_name(Block_origin,4000,500,'Beam Layout Plan at  ' + str(item),5)
 
 # FUNCTION TO DRAW COLUMNS
-def draw_columns():
-    connection = EtabsConnection()
-    sap_model, etabs_object, helper = connection.connect_to_etabs_2019()
-    grid_values, grid_mm, grid_ft = connection.get_etabs_grids(sap_model)
+# def draw_columns():
+#     connection = EtabsConnection()
+#     sap_model, etabs_object, helper = connection.connect_to_etabs_2019()
+#     grid_values, grid_mm, grid_ft = connection.get_etabs_grids(sap_model)
     
-    df_frames = get_frames()
-    # Use the apply method to apply the custom function to each row
+#     df_frames = get_frames()
+#     # Use the apply method to apply the custom function to each row
     
-    df_frames['D'] = df_frames.apply(call_draw_cols, axis=1)
+#     df_frames['D'] = df_frames.apply(call_draw_cols, axis=1)
 
 
-    # DRAW MULTIPLE GRIDS AS PER REUIREMENT OF COLUNN GRIDS
-    for item in df_frames['Story'].unique():
-        Block_origin = df_frames.loc[df_frames['Story'] == item,'Block_origin'].values[0]
-        AutocadConnection().draw_grid_lines(grid_mm,2000,300,Block_origin)
+#     # DRAW MULTIPLE GRIDS AS PER REUIREMENT OF COLUNN GRIDS
+#     for item in df_frames['Story'].unique():
+#         Block_origin = df_frames.loc[df_frames['Story'] == item,'Block_origin'].values[0]
+#         AutocadConnection().draw_grid_lines(grid_mm,2000,300,Block_origin)
 
 #FUNCITON SHOWING IN STREAMLIT APP WITH BUTTONS AND INPUTS. 
-def frame_function():
+# def frame_function():
         
-    if st.button("Draw Beams"):
-        draw_beams()
+#     if st.button("Draw Beams"):
+#         draw_beams()
 
-    if st.button("Draw Columns"):
-        draw_columns()
+#     if st.button("Draw Columns"):
+#         draw_columns()
 
 
 
@@ -559,37 +559,37 @@ def frame_function():
 #     return values
 
 # ADD LABEL
-def find_xy(label):
-    sap_model, etabs_object, helper = EtabsConnection().connect_to_etabs_2019()
-    point_coords = EtabsConnection().get_coordinates_from_etabs(sap_model)
-    return point_coords[str(label)][0], point_coords[str(label)][1]
+# def find_xy(label):
+#     sap_model, etabs_object, helper = EtabsConnection().connect_to_etabs_2019()
+#     point_coords = EtabsConnection().get_coordinates_from_etabs(sap_model)
+#     return point_coords[str(label)][0], point_coords[str(label)][1]
 
 
-def draw_foundations():
-    if st.button("Draw foundation"):
-        wb_name = 'Darchula_footing_api.xlsx'
-        ws_name = 'Foundation_Design'
-        df = ExcelConnection().load_from_excel(wb_name,ws_name)
-        df = df.dropna()
+# def draw_foundations():
+#     if st.button("Draw foundation"):
+#         wb_name = 'Darchula_footing_api.xlsx'
+#         ws_name = 'Foundation_Design'
+#         df = ExcelConnection().load_from_excel(wb_name,ws_name)
+#         df = df.dropna()
         
-        # df['Name'].unique().sort_values(by=['Name'])
-        df_names = df['Name'].unique()
-        np.sort(df_names)    
-        df['x'], df['y'] = zip(*df['Unique Names'].apply(find_xy))
+#         # df['Name'].unique().sort_values(by=['Name'])
+#         df_names = df['Name'].unique()
+#         np.sort(df_names)    
+#         df['x'], df['y'] = zip(*df['Unique Names'].apply(find_xy))
 
-        sap_model, etabs_object, helper = EtabsConnection().connect_to_etabs_2019()
-        grid_values, grid_mm, grid_ft = EtabsConnection().get_etabs_grids(sap_model)
+#         sap_model, etabs_object, helper = EtabsConnection().connect_to_etabs_2019()
+#         grid_values, grid_mm, grid_ft = EtabsConnection().get_etabs_grids(sap_model)
 
-        # DRAW IN M
-        # DRAW  GRID AS PER THE BLOCK ORIGIN
-        AutocadConnection().draw_grid_lines(grid_mm,2000,300,[])
+#         # DRAW IN M
+#         # DRAW  GRID AS PER THE BLOCK ORIGIN
+#         AutocadConnection().draw_grid_lines(grid_mm,2000,300,[])
 
-        ## FUNCTION TO ADD NAME OF THE BLOCK
-        AutocadConnection().add_block_name(0,4000,500,'FOUNDATION LAYOUT PLAN',5)
+#         ## FUNCTION TO ADD NAME OF THE BLOCK
+#         AutocadConnection().add_block_name(0,4000,500,'FOUNDATION LAYOUT PLAN',5)
 
-        ## FUNCTION TO CALL THE DRAW RECTANGLE FUNCTION FROM EACH ROW OF PANDA DATAFRAME. 
-        for index, row in df.iterrows():
-            AutocadConnection().draw_rect(float(row['Adopted Length']),float( row['Adopted Breadth']), float(row['x']), float(row['y']),row['Name'],500,200,500*0.6,'yes','yes')
+#         ## FUNCTION TO CALL THE DRAW RECTANGLE FUNCTION FROM EACH ROW OF PANDA DATAFRAME. 
+#         for index, row in df.iterrows():
+#             AutocadConnection().draw_rect(float(row['Adopted Length']),float( row['Adopted Breadth']), float(row['x']), float(row['y']),row['Name'],500,200,500*0.6,'yes','yes')
 
 
 
@@ -605,11 +605,11 @@ def main():
     if menu_choice == "Draw Table":
        draw_excel_table()
 
-    if menu_choice == "Draw Frames":
-       frame_function()
+    # if menu_choice == "Draw Frames":
+    #    frame_function()
     
-    if menu_choice == "Draw Foundation":
-       draw_foundations()
+    # if menu_choice == "Draw Foundation":
+    #    draw_foundations()
        
     
     # Add contact address
