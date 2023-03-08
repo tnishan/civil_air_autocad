@@ -307,8 +307,8 @@ class EtabsConnection:
         helper (type cOAPI pointer)
         """
         #create API helper object
-        helper = comtypes.client.CreateObject('ETABSv1.Helper');
-        helper = helper.QueryInterface(comtypes.gen.ETABSv1.cHelper);
+        helper = comtypes.client.CreateObject('ETABSv1.Helper')
+        helper = helper.QueryInterface(comtypes.gen.ETABSv1.cHelper)
         
         # #attach to a running instance of ETABS
         # try:
@@ -318,9 +318,9 @@ class EtabsConnection:
         #     print("No running instance of the program found or failed to attach.");
         #     sys.exit(-1);
         # #create SapModel object
-        myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject");
-        SapModel = myETABSObject.SapModel;
-        return SapModel,myETABSObject,helper;
+        myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject")
+        SapModel = myETABSObject.SapModel
+        return SapModel,myETABSObject,helper
     
     # GETS CO-ORDINATES OF ALL THE POINTS FROM ETABS. 
     def get_coordinates_from_etabs(self,sap_model):
