@@ -310,14 +310,15 @@ class EtabsConnection:
         helper = comtypes.client.CreateObject('ETABSv1.Helper');
         helper = helper.QueryInterface(comtypes.gen.ETABSv1.cHelper);
         
-        #attach to a running instance of ETABS
-        try:
-            #get the active ETABS object
-            myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject");
-        except (OSError, comtypes.COMError):
-            print("No running instance of the program found or failed to attach.");
-            sys.exit(-1);
-        #create SapModel object
+        # #attach to a running instance of ETABS
+        # try:
+        #     #get the active ETABS object
+        #     myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject");
+        # except (OSError, comtypes.COMError):
+        #     print("No running instance of the program found or failed to attach.");
+        #     sys.exit(-1);
+        # #create SapModel object
+        myETABSObject = helper.GetObject("CSI.ETABS.API.ETABSObject");
         SapModel = myETABSObject.SapModel;
         return SapModel,myETABSObject,helper;
     
